@@ -25,3 +25,6 @@ ADMINS = ['you@example.com']
 
 # pagination
 POSTS_PER_PAGE = 3
+
+WHOOSH_BASE = os.path.join(basedir, 'flask_app/db/search.db')
+MAX_SEARCH_RESULTS = 50
