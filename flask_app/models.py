@@ -1,6 +1,7 @@
 from flask_app import db
 from hashlib import md5
 from flask_app import app
+import re
 
 import sys
 if sys.version_info >= (3, 0):
@@ -31,16 +32,8 @@ class User(db.Model):
         return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % (md5(self.email.encode('utf-8')).hexdigest(), size)
 
     @staticmethod
-    def make_unique_nickname(nickname):
-        if User.query.filter_by(nickname=nickname).first() is None:
-            return nickname
-        version = 2
-        while True:
-            new_nickname = nickname + str(version)
-            if User.query.filter_by(nickname=new_nickname).first() is None:
-                break
-            version += 1
-        return new_nickname
+    def make_valid_nickname(nickname):
+        return re.sub('[^a-zA-Z0-9_\.]', '', nickname)
 
     def follow(self, user):
         if not self.is_following(user):

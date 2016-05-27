@@ -6,6 +6,8 @@ from .forms import LoginForm, EditForm, PostForm, SearchForm
 from .models import User, Post
 from .emails import follower_notification
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
+from flask_app import babel
+from config import LANGUAGES
 
 
 @lm.user_loader
@@ -17,6 +19,9 @@ def load_user(id):
 def before_request():
     g.user = current_user
 
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(LANGUAGES.keys())
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -36,6 +41,11 @@ def index(page=1):
                            form=form,
                            posts=posts)
 
+@app.route('/globe', methods=['GET', 'POST'])
+@login_required
+def globe():
+    return render_template('globe.html',
+                           title='Globe')
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
@@ -51,7 +61,6 @@ def login():
                            form=form,
                            providers=app.config['OPENID_PROVIDERS'])
 
-
 @oid.after_login
 def after_login(resp):
     if resp.email is None or resp.email == "":
@@ -62,6 +71,7 @@ def after_login(resp):
         nickname = resp.nickname
         if nickname is None or nickname == "":
             nickname = resp.email.split('@')[0]
+        nickname = User.make_valid_nickname(nickname)
         nickname = User.make_unique_nickname(nickname)
         user = User(nickname=nickname, email=resp.email)
         db.session.add(user)

@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -26,7 +27,13 @@ MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 ADMINS = ['your-gmail-username@gmail.com']
 
 # pagination
-POSTS_PER_PAGE = 3
+POSTS_PER_PAGE = 5
 
 WHOOSH_BASE = os.path.join(basedir, 'flask_app/db/search.db')
 MAX_SEARCH_RESULTS = 50
+
+# available languages
+LANGUAGES = {
+    'en': 'English',
+    'es': 'Español'
+}
